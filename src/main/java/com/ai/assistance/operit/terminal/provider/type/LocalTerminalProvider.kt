@@ -564,6 +564,10 @@ class LocalTerminalProvider(
         env["PROOT_LOADER"] = File(binDir, "loader").absolutePath
         env["TMPDIR"] = File(filesDir, "tmp").absolutePath
         env["PROOT_TMP_DIR"] = File(filesDir, "tmp").absolutePath
+        // 内核 6.6+ 上 proot 的 seccomp 加速层会失配：execve 全部回 ENOSYS，
+        // bash 连 libreadline 都加载不了，表现为 cd/ls 报
+        // "Function not implemented"。关掉该加速层即可，proot 仍走 ptrace。
+        env["PROOT_NO_SECCOMP"] = "1"
         env["TERM"] = "xterm-256color"
         env["LANG"] = "en_US.UTF-8"
         return env
